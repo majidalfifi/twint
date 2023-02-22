@@ -77,80 +77,85 @@ def is_tweet(tw):
 
 def _output(obj, output, config, **extra):
     logme.debug(__name__ + ':_output')
-    if config.Lowercase:
-        if isinstance(obj, str):
-            logme.debug(__name__ + ':_output:Lowercase:username')
-            obj = obj.lower()
-        elif obj.__class__.__name__ == "user":
-            logme.debug(__name__ + ':_output:Lowercase:user')
-            pass
-        elif obj.__class__.__name__ == "tweet":
-            logme.debug(__name__ + ':_output:Lowercase:tweet')
-            obj.username = obj.username.lower()
-            author_list.update({obj.username})
-            for dct in obj.mentions:
-                for key, val in dct.items():
-                    dct[key] = val.lower()
-            for i in range(len(obj.hashtags)):
-                obj.hashtags[i] = obj.hashtags[i].lower()
-            for i in range(len(obj.cashtags)):
-                obj.cashtags[i] = obj.cashtags[i].lower()
-        else:
-            logme.info('_output:Lowercase:hiddenTweetFound')
-            print("[x] Hidden tweet found, account suspended due to violation of TOS")
-            return
-    if config.Output != None:
-        if config.Store_csv:
-            try:
-                write.Csv(obj, config)
-                logme.debug(__name__ + ':_output:CSV')
-            except Exception as e:
-                logme.critical(__name__ + ':_output:CSV:Error:' + str(e))
-                print(str(e) + " [x] output._output")
-        elif config.Store_json:
-            write.Json(obj, config)
-            logme.debug(__name__ + ':_output:JSON')
-        else:
-            write.Text(output, config.Output)
-            logme.debug(__name__ + ':_output:Text')
-
-    if config.Elasticsearch:
-        logme.debug(__name__ + ':_output:Elasticsearch')
-        print("", end=".", flush=True)
-    else:
-        if not config.Hide_output:
-            try:
-                print(output.replace('\n', ' '))
-            except UnicodeEncodeError:
-                logme.critical(__name__ + ':_output:UnicodeEncodeError')
-                print("unicode error [x] output._output")
+    write.Json(output, config)
+    logme.debug(__name__ + ':_output:JSON')
+    # if config.Lowercase:
+    #     if isinstance(obj, str):
+    #         logme.debug(__name__ + ':_output:Lowercase:username')
+    #         obj = obj.lower()
+    #     elif obj.__class__.__name__ == "user":
+    #         logme.debug(__name__ + ':_output:Lowercase:user')
+    #         pass
+    #     elif obj.__class__.__name__ == "tweet":
+    #         logme.debug(__name__ + ':_output:Lowercase:tweet')
+    #         obj.username = obj.username.lower()
+    #         author_list.update({obj.username})
+    #         for dct in obj.mentions:
+    #             for key, val in dct.items():
+    #                 dct[key] = val.lower()
+    #         for i in range(len(obj.hashtags)):
+    #             obj.hashtags[i] = obj.hashtags[i].lower()
+    #         for i in range(len(obj.cashtags)):
+    #             obj.cashtags[i] = obj.cashtags[i].lower()
+    #     else:
+    #         logme.info('_output:Lowercase:hiddenTweetFound')
+    #         print("[x] Hidden tweet found, account suspended due to violation of TOS")
+    #         return
+    # if config.Output != None:
+    #     if config.Store_csv:
+    #         try:
+    #             write.Csv(obj, config)
+    #             logme.debug(__name__ + ':_output:CSV')
+    #         except Exception as e:
+    #             logme.critical(__name__ + ':_output:CSV:Error:' + str(e))
+    #             print(str(e) + " [x] output._output")
+    #     elif config.Store_json:
+    #         write.Json(obj, config)
+    #         logme.debug(__name__ + ':_output:JSON')
+    #     else:
+    #         write.Text(output, config.Output)
+    #         logme.debug(__name__ + ':_output:Text')
+    #
+    # if config.Elasticsearch:
+    #     logme.debug(__name__ + ':_output:Elasticsearch')
+    #     print("", end=".", flush=True)
+    # else:
+    #     if not config.Hide_output:
+    #         try:
+    #             print(output.replace('\n', ' '))
+    #         except UnicodeEncodeError:
+    #             logme.critical(__name__ + ':_output:UnicodeEncodeError')
+    #             print("unicode error [x] output._output")
 
 
 async def checkData(tweet, config, conn):
     logme.debug(__name__ + ':checkData')
-    tweet = Tweet(tweet, config)
-    if not tweet.datestamp:
-        logme.critical(__name__ + ':checkData:hiddenTweetFound')
-        print("[x] Hidden tweet found, account suspended due to violation of TOS")
-        return
-    if datecheck(tweet.datestamp + " " + tweet.timestamp, config):
-        output = format.Tweet(config, tweet)
-        if config.Database:
-            logme.debug(__name__ + ':checkData:Database')
-            db.tweets(conn, tweet, config)
-        if config.Pandas:
-            logme.debug(__name__ + ':checkData:Pandas')
-            panda.update(tweet, config)
-        if config.Store_object:
-            logme.debug(__name__ + ':checkData:Store_object')
-            if hasattr(config.Store_object_tweets_list, 'append'):
-                config.Store_object_tweets_list.append(tweet)
-            else:
-                tweets_list.append(tweet)
-        if config.Elasticsearch:
-            logme.debug(__name__ + ':checkData:Elasticsearch')
-            elasticsearch.Tweet(tweet, config)
-        _output(tweet, output, config)
+    # tweet = Tweet(tweet, config)
+    # output = json.dumps(tweet)
+    output = tweet
+    _output(tweet, output, config)
+    # if not tweet.datestamp:
+    #     logme.critical(__name__ + ':checkData:hiddenTweetFound')
+    #     print("[x] Hidden tweet found, account suspended due to violation of TOS")
+    #     return
+    # if datecheck(tweet.datestamp + " " + tweet.timestamp, config):
+    #     output = format.Tweet(config, tweet)
+    #     if config.Database:
+    #         logme.debug(__name__ + ':checkData:Database')
+    #         db.tweets(conn, tweet, config)
+    #     if config.Pandas:
+    #         logme.debug(__name__ + ':checkData:Pandas')
+    #         panda.update(tweet, config)
+    #     if config.Store_object:
+    #         logme.debug(__name__ + ':checkData:Store_object')
+    #         if hasattr(config.Store_object_tweets_list, 'append'):
+    #             config.Store_object_tweets_list.append(tweet)
+    #         else:
+    #             tweets_list.append(tweet)
+    #     if config.Elasticsearch:
+    #         logme.debug(__name__ + ':checkData:Elasticsearch')
+    #         elasticsearch.Tweet(tweet, config)
+    #     _output(tweet, output, config)
     # else:
     #     logme.critical(__name__+':checkData:copyrightedTweet')
 

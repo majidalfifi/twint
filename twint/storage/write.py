@@ -66,12 +66,12 @@ def Csv(obj, config):
 
 def Json(obj, config):
     _obj_type = obj.__class__.__name__
-    if _obj_type == "str":
-        _obj_type = "username"
-    null, data = struct(obj, config.Custom[_obj_type], _obj_type)
-
+    # if _obj_type == "str":
+    #     _obj_type = "username"
+    # null, data = struct(obj, config.Custom[_obj_type], _obj_type)
+    #
     base = addExt(config.Output, _obj_type, "json")
 
     with open(base, "a", newline='', encoding="utf-8") as json_file:
-        json.dump(data, json_file, ensure_ascii=False)
+        json.dump(obj, json_file, ensure_ascii=False)
         json_file.write("\n")
