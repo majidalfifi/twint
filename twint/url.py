@@ -151,7 +151,10 @@ async def Search(config, init):
     elif config.Links == "exclude":
         q += " exclude:links"
     if config.Source:
-        q += f" source:\"{config.Source}\""
+        if config.Source == "others":
+            q += f" -(source:\"Twitter for iPhone\" source:\"Twitter for Android\")"
+        else:
+            q += f" source:\"{config.Source}\""
     if config.Members_list:
         q += f" list:{config.Members_list}"
     if config.Filter_retweets:
