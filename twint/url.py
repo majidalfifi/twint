@@ -152,7 +152,7 @@ async def Search(config, init):
         q += " exclude:links"
     if config.Source:
         if config.Source == "others":
-            q += f" -(source:\"Twitter for iPhone\" source:\"Twitter for Android\")"
+            q += f" -(source:\"Twitter for iPhone\" OR source:\"Twitter for Android\")"
         else:
             q += f" source:\"{config.Source}\""
     if config.Members_list:
