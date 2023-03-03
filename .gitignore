@@ -114,3 +114,4 @@ ENV/
 
 test_twint.py
 .DS_Store
+/.idea
